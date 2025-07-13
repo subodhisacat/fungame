@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Talk Starter</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #202121;
+      color: #f0f0f0;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 1rem;
+    }
+
+    .question-box {
+      background: #2c2c2e;
+      padding: 1.5rem 2rem;
+      border-radius: 1rem;
+      margin: 1rem 0;
+      max-width: 600px;
+      font-size: 1.2rem;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    button {
+      background-color: #4CAF50;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      color: white;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>MEOW?</h1>
+  <div class="question-box" id="question">Click the button to get a question!</div>
+  <button onclick="getQuestion()">New Question</button>
+
+  <script>
+  const questions = [
+    // Basic & Easy Starters
+    "What’s your favorite color?",
+    "Do you prefer tea or coffee?",
+    "Are you more of a morning or night person?",
+    "What’s your favorite food?",
+    "Do you like summer or winter more?",
+    "Have you ever had a pet?",
+    "What’s your favorite movie of all time?",
+    "What’s your favorite thing to do on weekends?",
+    "Do you like reading books?",
+    "Which app do you use the most?",
+    "What’s your go-to comfort food?",
+    "Do you play any sports or games?",
+    "What’s your dream travel destination?",
+    "Do you enjoy cooking?",
+    "Are you more into city life or village life?",
+    "What’s one thing that makes you smile every time?",
+    "Do you believe in luck?",
+    "Do you like surprises or not really?",
+    "What’s your favorite subject in school?",
+    "Would you rather watch a movie or go out?"
+  ];
+
+  function getQuestion() {
+    const randomIndex = Math.floor(Math.random() * questions.length);
+    document.getElementById("question").innerText = questions[randomIndex];
+  }
+</script>
+
+</body>
+</html>
