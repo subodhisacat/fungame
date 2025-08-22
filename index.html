@@ -13,78 +13,278 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       height: 100vh;
       text-align: center;
+      padding: 1rem;
+      box-sizing: border-box;
     }
 
     h1 {
       font-size: 2em;
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
     }
 
     .question-box {
       background: #2c2c2e;
-      padding: 1.5rem 2rem;
+      padding: 1.2rem 2rem;
       border-radius: 1rem;
       margin: 1rem 0;
-      max-width: 600px;
       font-size: 1.2rem;
       transition: all 0.3s ease-in-out;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 600px;
     }
 
-    button {
+    .btn {
       background-color: #4CAF50;
       border: none;
-      padding: 0.8rem 1.5rem;
+      padding: 0.7rem 1.5rem;
       font-size: 1rem;
       color: white;
       border-radius: 0.5rem;
       cursor: pointer;
       transition: background-color 0.2s;
+      margin-top: 0.5rem;
     }
 
-    button:hover {
+    .btn:hover {
       background-color: #45a049;
+    }
+
+    .chat-container {
+      background: #2c2c2e;
+      border-radius: 1rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 600px;
+      min-height: 0;
+      flex: 1 1 auto;
+    }
+
+    .chat-header {
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid #444;
+      font-size: 0.95rem;
+      text-align: left;
+      opacity: 0.85;
+    }
+
+    .chat-messages {
+      flex: 1 1 auto;
+      padding: 1rem;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .chat-message {
+      margin-bottom: 0.8rem;
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
+
+    .chat-message .meta {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-right: 0.5rem;
+    }
+
+    .chat-message .name {
+      color: #4CAF50;
+      font-weight: 700;
+      margin-right: 0.3rem;
+    }
+
+    .chat-input {
+      display: flex;
+      padding: 0.5rem;
+      border-top: 1px solid #444;
+      gap: 0.5rem;
+    }
+
+    .chat-input input {
+      flex: 1 1 auto;
+      padding: 0.6rem;
+      border-radius: 0.5rem;
+      border: none;
+      outline: none;
+    }
+
+    .chat-input button {
+      flex: 0 0 auto;
     }
   </style>
 </head>
 <body>
   <h1>MEOW?</h1>
+
   <div class="question-box" id="question">Click the button to get a question!</div>
-  <button onclick="getQuestion()">New Question</button>
+  <button class="btn" id="newQuestionBtn">New Question</button>
 
+  <div class="chat-container">
+    <div class="chat-header" id="chatHeader">Connecting…</div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input">
+      <input type="text" id="chatInput" placeholder="Type your message…">
+      <button class="btn" id="sendBtn">Send</button>
+    </div>
+  </div>
+
+  <!-- Supabase client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-  const questions = [
-    // Basic & Easy Starters
-    "What’s your favorite color?",
-    "Do you prefer tea or coffee?",
-    "Are you more of a morning or night person?",
-    "What’s your favorite food?",
-    "Do you like summer or winter more?",
-    "Have you ever had a pet?",
-    "What’s your favorite movie of all time?",
-    "What’s your favorite thing to do on weekends?",
-    "Do you like reading books?",
-    "Which app do you use the most?",
-    "What’s your go-to comfort food?",
-    "Do you play any sports or games?",
-    "What’s your dream travel destination?",
-    "Do you enjoy cooking?",
-    "Are you more into city life or village life?",
-    "What’s one thing that makes you smile every time?",
-    "Do you believe in luck?",
-    "Do you like surprises or not really?",
-    "What’s your favorite subject in school?",
-    "Would you rather watch a movie or go out?"
-  ];
+    // ------------ Game questions ------------
+    const questions = [
+      "What’s your favorite color?",
+      "Do you prefer tea or coffee?",
+      "Are you more of a morning or night person?",
+      "What’s your favorite food?",
+      "Do you like summer or winter more?",
+      "Have you ever had a pet?",
+      "What’s your favorite movie of all time?",
+      "What’s your favorite thing to do on weekends?",
+      "Do you like reading books?",
+      "Which app do you use the most?",
+      "What’s your go-to comfort food?",
+      "Do you play any sports or games?",
+      "What’s your dream travel destination?",
+      "Do you enjoy cooking?",
+      "Are you more into city life or village life?",
+      "What’s one thing that makes you smile every time?",
+      "Do you believe in luck?",
+      "Do you like surprises or not really?",
+      "What’s your favorite subject in school?",
+      "Would you rather watch a movie or go out?"
+    ];
 
-  function getQuestion() {
-    const randomIndex = Math.floor(Math.random() * questions.length);
-    document.getElementById("question").innerText = questions[randomIndex];
-  }
-</script>
+    function getQuestion() {
+      const randomIndex = Math.floor(Math.random() * questions.length);
+      document.getElementById("question").innerText = questions[randomIndex];
+    }
+    document.getElementById("newQuestionBtn").addEventListener("click", getQuestion);
 
+    // ------------ Name handling ------------
+    let userName = localStorage.getItem("userName");
+    if (!userName) {
+      userName = prompt("Enter your name:");
+      if (userName && userName.trim() !== "") {
+        userName = userName.trim();
+      } else {
+        userName = "Anonymous";
+      }
+      localStorage.setItem("userName", userName);
+    }
+
+    // ------------ Supabase setup ------------
+    const SUPABASE_URL = "https://aijweamsznbkyotuqetj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpandlYW1zem5ia3lvdHVxZXRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4Nzg0NzksImV4cCI6MjA3MTQ1NDQ3OX0.11FJH3URao4I7GmKcy21CGjRLnufseklVHUH3jolIck";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const chatHeader = document.getElementById("chatHeader");
+    const chatMessagesEl = document.getElementById("chatMessages");
+    const chatInput = document.getElementById("chatInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+    chatHeader.textContent = `You are: ${userName} — online`;
+
+    // Initial load of last 200 messages
+    async function loadMessages() {
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .order('created_at', { ascending: true })
+        .limit(200);
+
+      if (error) {
+        chatHeader.textContent = "Failed to load chat. Check keys / table.";
+        console.error(error);
+        return;
+      }
+      chatMessagesEl.innerHTML = '';
+      data.forEach(renderMessage);
+      scrollToBottom();
+    }
+
+    // Realtime subscription for new messages
+    function subscribeToMessages() {
+      supabase
+        .channel('public:messages')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
+          renderMessage(payload.new);
+          scrollToBottom();
+        })
+        .subscribe((status) => {
+          // Optional status handling
+          // console.log('Realtime status:', status);
+        });
+    }
+
+    // Send message
+    async function sendMessage() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+      sendBtn.disabled = true;
+
+      const { error } = await supabase
+        .from('messages')
+        .insert({ name: userName, text });
+
+      if (error) {
+        alert("Failed to send message. Check your Supabase keys & policies.");
+        console.error(error);
+      } else {
+        chatInput.value = '';
+      }
+      sendBtn.disabled = false;
+    }
+
+    // Render one message safely
+    function renderMessage(msg) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'chat-message';
+
+      const meta = document.createElement('span');
+      meta.className = 'meta';
+
+      const nm = document.createElement('span');
+      nm.className = 'name';
+      nm.textContent = msg.name + ':';
+
+      const time = document.createElement('span');
+      time.className = 'meta';
+      const dt = new Date(msg.created_at || Date.now());
+      time.textContent = ' ' + dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      const text = document.createElement('div');
+      text.textContent = msg.text;
+
+      wrapper.appendChild(nm);
+      wrapper.appendChild(time);
+      wrapper.appendChild(text);
+
+      chatMessagesEl.appendChild(wrapper);
+    }
+
+    function scrollToBottom() {
+      chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+    }
+
+    // Events
+    sendBtn.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // Boot
+    loadMessages();
+    subscribeToMessages();
+  </script>
 </body>
 </html>
